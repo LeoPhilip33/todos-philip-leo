@@ -1,31 +1,51 @@
 <script lang="ts" setup >
 import { ref } from 'vue';
 
+  const isediting = ref(false)
   const arrayAFaire: any = ref([]);
   const arrayInProgress: any = ref([]);
   const arrayDone: any = ref([]);
 
   const form: any = ref({
-    title: '',
+    title: 'RIEN',
     time: 0,
-    users: ''
+    users: 'RIEN'
   })
 
   const tacheAFaire = () => {
     arrayAFaire.value.push(form.value);
     form.value = {
-      title: '',
+      title: 'RIEN',
       time: 0,
-      users: ''
+      users: 'RIEN'
     };
   }
 
   const inProgressAFaire = (index: number) => {
-    arrayInProgress.value.push(arrayAFaire.slice(index, 1)[0]);
+    arrayInProgress.value.push(arrayAFaire.value[index])
+    arrayAFaire.value.splice(index, 1)
   }
 
+  const inProgressToDone = (index: number) => {
+    arrayDone.value.push(arrayInProgress.value[index])
+    arrayInProgress.value.splice(index, 1)
+  }   
+
   const supprimerAFaire = (index: number) => {
-    arrayAFaire.valuesplice(index, 1);
+    arrayAFaire.value.splice(index, 1);
+  }
+
+  const supprimerInProgress = (index: number) => {
+    arrayInProgress.value.splice(index, 1);
+  }
+
+  const archiverDone = (index: number) => {
+    arrayDone.value.splice(index, 1);
+  }
+
+  const editElement = (index: number, element: string) => {
+    isediting.value = true;
+
   }
 </script>
 
@@ -50,27 +70,45 @@ import { ref } from 'vue';
         {{ element.users }}
 
         <button @click="inProgressAFaire(index)"> En cours </button>
-        <button @click="editerAFaire(index)"> Editer</button>
+        <button @click="editElement(index, 'tamer')"> Editer</button>
         <button @click="supprimerAFaire(index)"> Supprimer </button>
       </div>
     </div>
 
-    <!-- <div v-if="arrayInProgress.length > 0">
+     <div v-if="arrayInProgress.length > 0">
       <h1> En cours </h1>
-      <div v-for="element in arrayAFaire">
+        <div v-for="(element, index) in arrayInProgress" :key="index">
         {{ element.title }}
         {{ element.time }}
         {{ element.users }}
+
+        <button @click="inProgressToDone(index)"> Done </button>
+        <!-- <button @click="editerAFaire(index)"> Editer</button> -->
+        <button @click="supprimerInProgress(index)"> Supprimer </button>
       </div>
     </div>
 
     <div v-if="arrayDone.length > 0">
       <h1> Terminé </h1>
-      <div v-for="element in arrayAFaire">
+      <div v-for="(element, index) in arrayDone" :key="index">
         {{ element.title }}
         {{ element.time }}
         {{ element.users }}
+
+        <button @click="archiverDone(index)"> Supprimer </button>
       </div>
-    </div> -->
+    </div>
+
+    <div>
+      Il y a actuellement: <br>
+      {{ arrayAFaire.length }} taches <br>
+      {{ arrayInProgress.length }} taches in progress <br>
+      {{ arrayDone.length }} taches effectuées
+    </div>
+  </div>
+
+  <div v-if="isediting">
+    <h1> ZONE DE MODIFICATION </h1>
+
   </div>
 </template>
